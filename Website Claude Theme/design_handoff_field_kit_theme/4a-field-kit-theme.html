@@ -1,0 +1,45 @@
+<section id="4a" style="position:relative; display:inline-block; vertical-align:top; margin:40px 20px;">
+  <div style="position:absolute; top:-28px; left:0; font:600 12px Space Mono, monospace; color:oklch(45% 0.02 90); letter-spacing:0.05em;">4a — REGISTRATION MARKS (more blueprint, based on <a href="#3b" style="color:oklch(45% 0.14 40);">3b</a>)</div>
+  <div style="width:1180px; min-height:860px; background:oklch(97% 0.008 90); font-family:'Courier Prime', monospace; color:oklch(38% 0.09 245); position:relative; overflow:hidden; border:1px solid oklch(80% 0.03 245);">
+    <div style="position:absolute; inset:0; background-image: repeating-linear-gradient(0deg, oklch(80% 0.05 245 / 0.15) 0px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, oklch(80% 0.05 245 / 0.15) 0px, transparent 1px, transparent 40px); pointer-events:none;"></div>
+    <div style="position:absolute; top:14px; left:14px; width:16px; height:16px; border-left:2px solid oklch(45% 0.08 245); border-top:2px solid oklch(45% 0.08 245);"></div>
+    <div style="position:absolute; top:14px; right:14px; width:16px; height:16px; border-right:2px solid oklch(45% 0.08 245); border-top:2px solid oklch(45% 0.08 245);"></div>
+    <div style="position:absolute; bottom:14px; left:14px; width:16px; height:16px; border-left:2px solid oklch(45% 0.08 245); border-bottom:2px solid oklch(45% 0.08 245);"></div>
+    <div style="position:absolute; bottom:14px; right:14px; width:16px; height:16px; border-right:2px solid oklch(45% 0.08 245); border-bottom:2px solid oklch(45% 0.08 245);"></div>
+    <div style="padding:34px 44px 20px; border-bottom:1px solid oklch(80% 0.05 245 / 0.5); display:flex; justify-content:space-between; align-items:flex-end;">
+      <div>
+        <div style="font:700 40px 'Courier Prime', monospace; letter-spacing:0.01em; color:oklch(30% 0.1 245);">Field Kit</div>
+        <div style="font:600 12px 'Courier Prime', monospace; letter-spacing:0.1em; color:oklch(45% 0.08 245); margin-top:8px;">DWG NO. FK-04 — PERSONAL TOOLING — SCALE 1:1</div>
+      </div>
+      <div style="text-align:right; font:600 11px 'Courier Prime', monospace; color:oklch(35% 0.09 245); border:1px solid oklch(45% 0.08 245); padding:8px 12px;">
+        <div>DRAWN BY: ME</div><div>REV: C</div><div>{{ toolCountA }} ITEMS</div>
+      </div>
+    </div>
+    <div style="padding:22px 44px 0; display:flex; gap:14px; align-items:center;">
+      <span style="font:700 12px 'Courier Prime', monospace; color:oklch(45% 0.08 245);">⊕</span>
+      <input placeholder="Search schematic..." value="{{ search10 }}" onChange="{{ setSearch10 }}"
+        style="flex:1; font:14px 'Courier Prime', monospace; background:transparent; border:1px solid oklch(60% 0.06 245 / 0.6); padding:11px 14px; color:oklch(30% 0.1 245); outline:none;" />
+    </div>
+    <div style="padding:16px 44px 0; display:flex; flex-wrap:wrap; gap:8px;">
+      <sc-for list="{{ chipsJ }}" as="chip" hint-placeholder-count="6">
+        <div onClick="{{ chip.onClick }}" style="{{ chip.style }}">{{ chip.cat }}</div>
+      </sc-for>
+    </div>
+    <div style="padding:26px 44px 60px; display:grid; grid-template-columns:repeat(3, 1fr); gap:16px;">
+      <sc-for list="{{ filteredJ }}" as="tool" hint-placeholder-count="9">
+        <div style="border:1px solid oklch(60% 0.06 245 / 0.6); padding:16px; position:relative;">
+          <div style="position:absolute; top:-1px; left:14px; width:10px; height:2px; background:oklch(45% 0.08 245);"></div>
+          <div style="font:700 15px 'Courier Prime', monospace; text-transform:uppercase; color:oklch(28% 0.1 245);">{{ tool.name }}</div>
+          <div style="font:13px 'Courier Prime', monospace; color:oklch(42% 0.08 245); margin-top:8px; line-height:1.5;">{{ tool.desc }}</div>
+          <div style="margin-top:14px; font:11px 'Courier Prime', monospace; letter-spacing:0.04em; color:oklch(48% 0.08 245); border-top:1px dotted oklch(55% 0.06 245); padding-top:8px; display:flex; justify-content:space-between;">
+            <span>REF/{{ tool.cat }}</span><span>{{ tool.tag }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="position:absolute; bottom:0; left:0; right:0; border-top:2px solid oklch(45% 0.08 245); padding:10px 44px; display:flex; justify-content:space-between; font:600 10px 'Courier Prime', monospace; letter-spacing:0.08em; color:oklch(45% 0.08 245);">
+      <span>FIELD KIT — TOOLING INDEX</span><span>SHEET 1 OF 1</span>
+    </div>
+  </div>
+</section>
+

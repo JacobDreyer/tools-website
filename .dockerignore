@@ -1,0 +1,28 @@
+# Keep the build context small and reproducible. Node deps and the built dist are
+# regenerated inside the image; the venv and caches must never leak in.
+.git
+.github
+.claude
+docs
+*.md
+.DS_Store
+
+# node — reinstalled by `npm ci` in the build stage
+node_modules
+**/node_modules
+frontend/dist
+
+# python — reinstalled from requirements.txt; never ship the local venv
+server/.venv
+**/.venv
+**/__pycache__
+*.pyc
+
+# secrets & local env — must never enter an image layer
+.env
+.env.*
+!.env.example
+
+# design source, not part of the app
+Website Claude Theme
+Website Claude Theme.zip

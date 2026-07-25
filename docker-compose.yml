@@ -1,0 +1,32 @@
+# Field Kit — deploy definition. Lives on the runner host at /opt/tools/docker-compose.yml.
+#
+# Image path is lowercase (ghcr.io/jacobdreyer/tools-website); it must match
+# docker/metadata-action's lowercased output from github.repository. If your
+# GitHub repo is not named "tools-website", change it in BOTH lines below.
+#
+# Internal-only site: host ports are proxied by NPM (on core) to the *.lan
+# hostnames. Container listens on 8000 (unprivileged, non-root uvicorn).
+# Tags come from .env (chmod 600, alongside this file); CI rewrites them to
+# immutable sha- tags on each deploy.
+
+services:
+  prod:
+    image: ghcr.io/jacobdreyer/tools-website:${PROD_TAG:-latest}
+    container_name: tools-prod
+    restart: unless-stopped
+    ports:
+      - "8082:8000"
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  # Delete this service if you don't want a staging environment.
+  stage:
+    image: ghcr.io/jacobdreyer/tools-website:${STAGE_TAG:-staging}
+    container_name: tools-stage
+    restart: unless-stopped
+    ports:
+      - "8083:8000"
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
