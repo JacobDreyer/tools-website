@@ -16,6 +16,11 @@ services:
     restart: unless-stopped
     ports:
       - "8082:8000"
+    environment:
+      # Read from /opt/tools/.env — the Restaurant Selector tool connects here.
+      MONGO_URI: ${MONGO_URI:-mongodb://192.168.0.13:27017}
+      MONGO_DB: ${MONGO_DB:-Restaurants-DB}
+      MONGO_COLLECTION: ${MONGO_COLLECTION:-Restaurants-Collection}
     logging:
       driver: json-file
       options: { max-size: "10m", max-file: "3" }
@@ -27,6 +32,10 @@ services:
     restart: unless-stopped
     ports:
       - "8083:8000"
+    environment:
+      MONGO_URI: ${MONGO_URI:-mongodb://192.168.0.13:27017}
+      MONGO_DB: ${MONGO_DB:-Restaurants-DB}
+      MONGO_COLLECTION: ${MONGO_COLLECTION:-Restaurants-Collection}
     logging:
       driver: json-file
       options: { max-size: "10m", max-file: "3" }

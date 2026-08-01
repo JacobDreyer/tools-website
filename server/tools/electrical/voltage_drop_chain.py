@@ -4,7 +4,7 @@ from toolkit import Result, Tool, ToolError, fields
 
 
 # region: code
-def solve_voltage_drops(num_devices, distances, currents, voltages, watts,
+def solve_voltage_drops(num_devices, distances, supply_voltages, watts,
                         resistivity, convergence_factor, max_iterations=500):
     """Relax the current/voltage-drop pair until the drops stop moving.
 
@@ -15,7 +15,11 @@ def solve_voltage_drops(num_devices, distances, currents, voltages, watts,
 
     Returns (voltage_drops, currents, iterations, converged, history).
     """
-    currents = list(currents)
+
+    currents = [0] * num_devices
+    for i, w in enumerate(watts):
+        currents[i] = w / supply_voltages[i]
+
     voltage_drops = [0.0] * num_devices
     history = []
     iterations = 0
@@ -41,10 +45,10 @@ def solve_voltage_drops(num_devices, distances, currents, voltages, watts,
             if abs(new_voltage_drop - voltage_drops[index]) > change_amount:
                 change_amount = abs(new_voltage_drop - voltage_drops[index])
 
-            remaining = voltages[index] - new_voltage_drop
+            remaining = supply_voltages[index] - new_voltage_drop
             if remaining <= 0:
                 raise ValueError(
-                    f"Device {index + 1} collapses the run: all {voltages[index]:g} V is "
+                    f"Device {index + 1} collapses the run: all {supply_voltages[index]:g} V is "
                     f"eaten by {new_voltage_drop:.2f} V of line loss.")
 
             currents[index] = watts[index] / remaining       # constant power -> new current
@@ -73,13 +77,10 @@ def run(p):
     for i, v in enumerate(voltages):
         if v <= 0:
             raise ToolError(f"Device {i + 1} has a supply voltage of {v:g} V.")
-    for i, c in enumerate(p["currents"]):
-        if c <= 0:
-            raise ToolError(f"Device {i + 1} needs a non-zero seed current to start the solve.")
 
     try:
         drops, currents, iterations, converged, history = solve_voltage_drops(
-            n, distances, p["currents"], voltages, watts,
+            n, distances, voltages, watts,
             resistivity, p["convergence_factor"], p["max_iterations"])
     except ValueError as exc:
         raise ToolError(
@@ -236,25 +237,19 @@ TOOL = Tool(
         "change in any accumulated drop falls below the convergence factor.\n\n"
         "Resistivity is the loop-metre value for your conductor in ohms per foot of "
         "single-conductor length; the solver doubles the distance for the return path. "
-        "0.0065 Ω/ft is roughly 18 AWG copper — use the Wire Resistance tool for others."
     ),
     category="electrical/power-distribution",
-    rev="C",
+    rev="1.1",
     inputs=[
         fields.integer(
-            "num_devices", "Number of devices", 8, min=1, max=200, group="Array",
+            "num_devices", "Number of devices", 1, min=1, max=200, group="Array",
             help="Devices on the run, ordered from the supply outward. "
                  "Changing this resizes the table below."),
         fields.number_list(
-            "distances", "Distance", [140, 32, 34, 46, 33, 28, 50, 46],
+            "distances", "Distance", [10],
             unit="ft", table="devices", length_from="num_devices",
             help="Length of the segment feeding each device, measured from the previous "
                  "device (or the supply, for the first)."),
-        fields.number_list(
-            "currents", "Seed current", [0.20833] * 8,
-            unit="A", table="devices", length_from="num_devices",
-            help="Starting guess for each device's draw. The solver overwrites these; "
-                 "watts ÷ volts is a good seed."),
         fields.number_list(
             "voltages", "Supply", [24] * 8,
             unit="V", table="devices", length_from="num_devices",
@@ -275,7 +270,7 @@ TOOL = Tool(
             "max_iterations", "Iteration cap", 500, min=1, max=100000, group="Solver",
             help="Safety net so a diverging run cannot spin forever."),
         fields.number(
-            "drop_limit_pct", "Advisory drop limit", 10, unit="%", step=0.5, min=0, group="Solver",
+            "drop_limit_pct", "Advisory drop limit", 3, unit="%", step=0.5, min=0, group="Solver",
             help="Reporting only — devices past this are flagged. 10% is the usual "
                  "rule of thumb for low-voltage runs."),
     ],

@@ -29,6 +29,11 @@
           "description": "Digests and checksums."
         }
       ]
+    },
+    {
+      "id": "misc",
+      "name": "Misc",
+      "description": "Everything that doesn't fit elsewhere."
     }
   ]
 }

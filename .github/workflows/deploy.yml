@@ -99,7 +99,7 @@ jobs:
   deploy:
     needs: build
     if: github.event_name == 'push'
-    runs-on: [self-hosted, proxmox, web]
+    runs-on: [self-hosted, proxmox, tools]   # the runner INSIDE the tools CT, not web
     steps:
       - name: Resolve target
         id: t
