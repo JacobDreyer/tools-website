@@ -11,7 +11,7 @@ import random
 
 from toolkit import Result, Tool, ToolError, fields
 
-MONGO_URI = os.environ.get("MONGO_URI", "mongodb://192.168.0.18:27017")
+MONGO_URI = os.environ.get("MONGO_URI", "mongodb://localhost:27017")
 DB_NAME = os.environ.get("MONGO_DB", "Restaurants-DB")
 COLLECTION_NAME = os.environ.get("MONGO_COLLECTION", "Restaurants-Collection")
 
