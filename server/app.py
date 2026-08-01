@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import contextlib
 import io
+import os
 import sys
 import time
 import traceback
@@ -25,6 +26,45 @@ from typing import Any
 BASE_DIR = Path(__file__).resolve().parent
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
+
+
+def _load_dotenv() -> str | None:
+    """Read KEY=VALUE lines from a .env into the process environment.
+
+    Tool modules read their config from os.environ at import time, so this must
+    run before the registry imports them (i.e. before registry.load()). A real
+    environment variable always wins — anything docker compose already injected
+    is left untouched — so this only fills gaps for local or non-compose runs.
+    Returns a short description of what it loaded, or None if no file was found.
+    """
+    candidates = [
+        BASE_DIR.parent / ".env",   # repo root — local dev
+        Path.cwd() / ".env",
+        Path("/opt/tools/.env"),    # container deploy dir, if run outside compose
+    ]
+    for path in candidates:
+        try:
+            if not path.is_file():
+                continue
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            continue
+        loaded = 0
+        for raw in lines:
+            line = raw.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            if key and key not in os.environ:   # never override a real env var
+                os.environ[key] = value
+                loaded += 1
+        return f"{path} ({loaded} new var(s))"
+    return None
+
+
+_DOTENV_SOURCE = _load_dotenv()
 
 from fastapi import Body, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -39,6 +79,10 @@ RUNNER = ThreadPoolExecutor(max_workers=4, thread_name_prefix="tool")
 
 @contextlib.asynccontextmanager
 async def lifespan(_: FastAPI):
+    if _DOTENV_SOURCE:
+        print(f"[field-kit] env loaded from {_DOTENV_SOURCE}")
+    else:
+        print("[field-kit] no .env file found — using process env / defaults")
     registry.load()
     print(f"[field-kit] {len(registry.tools)} tool(s) loaded")
     for err in registry.errors:
