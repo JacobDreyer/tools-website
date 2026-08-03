@@ -15,6 +15,11 @@
           "id": "conductors",
           "name": "Conductors",
           "description": "Wire tables, resistance and derating."
+        },
+        {
+          "id": "supports",
+          "name": "Supports",
+          "description": "Cable tray, strut and support sizing."
         }
       ]
     },
